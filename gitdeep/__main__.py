@@ -6,7 +6,7 @@
 """
 
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __date__    = "2016/05/09"
 __license__ = 'MIT'
 
@@ -14,7 +14,7 @@ import argparse
 import os
 import re
 import sys
-import git_subdir
+import gitdeep
 
 def parse_docstring(func):
     """
