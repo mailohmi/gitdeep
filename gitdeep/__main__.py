@@ -6,7 +6,7 @@
 """
 
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __date__    = "2016/05/09"
 __license__ = 'MIT'
 
@@ -77,8 +77,8 @@ def console_main():
 
     # 引数の処理を行う。
     parser = argparse.ArgumentParser(
-                     description=git_subdir.__doc__.strip(os.linesep))
-    values = parse_docstring(git_subdir.call)
+                     description=gitdeep.__doc__.strip(os.linesep))
+    values = parse_docstring(gitdeep.call)
     values["debug"].pop("type")
     parser.add_argument(
         '--debug', action='store_true', default=False, **values["debug"])
@@ -95,7 +95,7 @@ def console_main():
         sys.exit(-1)
     else:
         try:
-            result = git_subdir.call(verbose=True, **vars(args))
+            result = gitdeep.call(verbose=True, **vars(args))
 
         except KeyboardInterrupt as ex:
             sys.stderr.write(u"中断しました。")
