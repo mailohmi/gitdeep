@@ -14,6 +14,6 @@ from gitdeep.gitdeep import *
 
 # グローバル変数
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __date__    = "2016/05/16"
 __license__ = 'MIT'
