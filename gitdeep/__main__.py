@@ -5,16 +5,25 @@
 パッケージエントリ
 """
 
-__author__ = "Kazuyuki OHMI"
-__version__ = "1.0.2"
-__date__    = "2016/05/09"
-__license__ = 'MIT'
+# 互換モジュール
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
+# システムモジュール
 import argparse
 import os
 import re
 import sys
+
+# ローカルモジュール
+sys.path.append(os.path.join(os.path.dirname(__file__)))
 import gitdeep
+
+# グローバル変数
+__author__ = "Kazuyuki OHMI"
+__version__ = "1.0.3"
+__date__    = "2016/05/16"
+__license__ = 'MIT'
 
 def parse_docstring(func):
     """
@@ -66,7 +75,6 @@ def parse_docstring(func):
 
     return values
 
-
 def console_main():
     """
     console_scripts entry point
@@ -104,7 +112,6 @@ def console_main():
     # カレントディレクトリを復帰する。
     os.chdir(cwd)
     return result
-
 
 if __name__ == "__main__":
     """

@@ -6,8 +6,8 @@
 """
 
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.0"
-__date__    = "2016/05/09"
+__version__ = "1.0.1"
+__date__    = "2016/05/16"
 __license__ = 'MIT'
 
 import logging
@@ -46,7 +46,7 @@ def call(cmd, args, **kwargs):
             print("size: %s" % bytes2str(du(path_base)))
             print("")
 
-        line = "cd '{dir}' && git {cmd} {args}".format(
+        line = 'cd "{dir}" && git {cmd} {args}'.format(
                     dir=path_base, cmd=cmd, args=" ".join(args))
         ret, _txt = popen(line, echo=True, abort=True)
         print("")
