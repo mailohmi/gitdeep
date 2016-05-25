@@ -17,7 +17,7 @@ setup(
         install_requires = [],
         entry_points={
             'console_scripts': [
-                'gitdeep = gitdeep:main'
+                'gitdeep = gitdeep.gitdeep:main'
             ]
         }
     )

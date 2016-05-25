@@ -5,15 +5,15 @@
 下位ディレクトリを含めてgitを実行します。
 """
 
-# 互換モジュール
+# Compatible module
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-# ローカルモジュール
+# Local module
 from gitdeep.gitdeep import *
 
-# グローバル変数
+# Global variable
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.2"
-__date__    = "2016/05/16"
+__version__ = "1.0.4"
+__date__    = "2016/05/25"
 __license__ = 'MIT'

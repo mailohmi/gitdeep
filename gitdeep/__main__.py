@@ -5,21 +5,21 @@
 パッケージエントリ
 """
 
-# 互換モジュール
+# Compatible module
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-# システムモジュール
+# Buitin module
 import os
 import sys
 
-# ローカルモジュール
+# Local module
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 import gitdeep
 
-# グローバル変数
+# Global variable
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 __date__    = "2016/05/16"
 __license__ = 'MIT'
 

@@ -5,11 +5,11 @@
 下位ディレクトリを含めてgitを実行します。
 """
 
-__author__ = "Kazuyuki OHMI"
-__version__ = "1.0.1"
-__date__    = "2016/05/16"
-__license__ = 'MIT'
+# Compatible module
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
+# Buitin module
 import argparse
 import logging
 import os
@@ -17,6 +17,15 @@ import re
 import sys
 import subprocess
 
+# Local module
+sys.path.append(os.path.join(os.path.dirname(__file__)))
+import logwriter
+
+# Global variable
+__author__ = "Kazuyuki OHMI"
+__version__ = "1.0.4"
+__date__    = "2016/05/25"
+__license__ = 'MIT'
 
 def call(cmd, args, **kwargs):
     """
@@ -29,7 +38,7 @@ def call(cmd, args, **kwargs):
     :return:             0:正常終了
     """
 
-    # 変数を初期化する。
+    # 変数を初期化します。
     ret = 0
     verbose = kwargs.get("verbose")
     _debug = kwargs.get("debug")
@@ -67,7 +76,7 @@ def get_dirs(path_search="", dir_match=".*"):
     :return:                ファイルのリスト
     """
 
-    # 変数を初期化する。
+    # 変数を初期化します。
     results = []
     if path_search.endswith(os.sep):
         path_search = path_search.rstrip(os.sep)
@@ -132,7 +141,7 @@ def du(path, *args, **kwargs):
     :return:
     """
 
-    # 変数を初期化する。
+    # 変数を初期化します。
     _debug = kwargs.get("debug")
     logger = kwargs.get("logger")
     if not logger:
@@ -163,7 +172,7 @@ def bytes2str(byte, fmt='%(value).0f %(symbol)sB', symbol_type='short'):
                            'zetta', 'iotta'),
     }
 
-    # 変数を初期化する。
+    # 変数を初期化します。
     symbol_type = SYMBOLS[symbol_type]
     base = {}
 
@@ -232,8 +241,7 @@ def main():
     console_scripts entry point
     """
 
-    # 変数を初期化する。
-    cwd = os.getcwd()
+    # 変数を初期化します。
     result = 0
 
     # 引数の処理を行う。
@@ -262,12 +270,7 @@ def main():
             sys.stderr.write(u"中断しました。")
             sys.stderr.write(os.linesep)
 
-    # カレントディレクトリを復帰する。
-    os.chdir(cwd)
     return result
-
-
-    return 0
 
 if __name__ == "__main__":
     """
