@@ -8,17 +8,18 @@ gitdeep
   注) 下位ディレクトリをまとめて処理されるため、更新を伴う操作(git commit 等)は、個別に行って下さい。
 
 2. 必要なシステム
-  * python3.4
   * git
+  * python
+  * python six
 
 3. セットアップ方法
   (1) インストール
     * pipからインストールする場合
     	以下のコマンドにより直接インストールできます。
-    	$ python3.4 -m pip install --user --upgrade git+https://github.com/mailohmi/gitdeep.git
+    	$ python -m pip install --user --upgrade git+https://github.com/mailohmi/gitdeep.git
 
     	インストールすると、以下のコマンドによりパッケージが表示されます。
-    	$ python3.4 -m pip list
+    	$ python -m pip list
     	gitdeep (*.*.*)
 
   (2) ソースコードを取得する場合
@@ -29,10 +30,12 @@ gitdeep
   (3) PATHの設定
     インストール後に、環境変数のPATHを設定します。
     以下のコマンドを実行するとパスが表示されるので、そのパスをPATHに設定します。
-    $ python3.4 -c 'import os;import site; print(os.path.join(site.getuserbase(), "bin"))'
+    $ python -c 'import os;import site; print(os.path.join(site.getuserbase(), "bin"))'
 
     ex)
-      .../Python/3.4/bin
+      > @powershell -NoProfile -ExecutionPolicy Bypass -Command "$path = [Environment]::GetEnvironmentVariable('PATH', 'User');$path += ';%USERPROFILE%\AppData\Roaming\Python\Python35\Scripts';[Environment]::SetEnvironmentVariable('PATH', $path, 'User')"
+
+C:\Users\kazuyuki\AppData\Roaming\Python\bin
 
   (4) 動作確認
     以下のコマンドにより、ヘルプが表示されれば、問題ありません。
@@ -46,9 +49,9 @@ gitdeep
   	  args        引数
   	...
 
-  (3) アンインストール
+  (5) アンインストール
     * 以下のコマンドを実行します。
-      $ python3.4 -m pip uninstall git-subdir
+      $ python -m pip uninstall gitdeep
 
 4. 使用方法
   * コマンドから実行する(gitdeep)。

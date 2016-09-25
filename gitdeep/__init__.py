@@ -14,6 +14,6 @@ from gitdeep.gitdeep import *
 
 # Global variable
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.4"
-__date__    = "2016/05/25"
+__version__ = "1.0.5"
+__date__    = "2016/09/25"
 __license__ = 'MIT'

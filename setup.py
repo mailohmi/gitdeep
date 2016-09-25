@@ -14,7 +14,7 @@ setup(
         url              = 'https://github.com/mailohmi/gitdeep.git',
         keywords         = 'git',
         packages         = find_packages(),
-        install_requires = [],
+        install_requires = [six],
         entry_points={
             'console_scripts': [
                 'gitdeep = gitdeep.gitdeep:main'
