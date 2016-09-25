@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
-import gitdeep
 
 setup(
         name             = 'gitdeep',
-        version          = gitdeep.__version__,
-        description      = gitdeep.__doc__.strip(' \r\n'),
-        license          = gitdeep.__license__,
-        author           = gitdeep.__author__,
+        version          = "1.0.6",
+        description      = "下位ディレクトリを含めてgitを実行します。",
+        license          = "MIT",
+        author           = "Kazuyuki OHMI",
         author_email     = 'mailohmi@gmail.com',
         url              = 'https://github.com/mailohmi/gitdeep.git',
         keywords         = 'git',
