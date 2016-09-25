@@ -35,8 +35,6 @@ gitdeep
     ex)
       > @powershell -NoProfile -ExecutionPolicy Bypass -Command "$path = [Environment]::GetEnvironmentVariable('PATH', 'User');$path += ';%USERPROFILE%\AppData\Roaming\Python\Python35\Scripts';[Environment]::SetEnvironmentVariable('PATH', $path, 'User')"
 
-C:\Users\kazuyuki\AppData\Roaming\Python\bin
-
   (4) 動作確認
     以下のコマンドにより、ヘルプが表示されれば、問題ありません。
   	$ gitdeep -h
