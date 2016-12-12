@@ -26,9 +26,11 @@ gitdeep
     以下のコマンドより取得します。
     Github
       $ git clone https://github.com/mailohmi/gitdeep.git
-    
+
+    ビルドします。
+    $ python setup.py bdist_wheel --universal
+
     インストールします。
-      $ cd gitdeep
       $ python -m pip install --upgrade .
 
   (3) PATHの設定

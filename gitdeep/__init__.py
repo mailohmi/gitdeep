@@ -13,7 +13,7 @@ from __future__ import unicode_literals
 from gitdeep.gitdeep import *
 
 # Global variable
-__author__ = gitdeep.__author__
-__version__ = gitdeep.__version__
-__date__    = gitdeep.__date__
-__license__ = gitdeep.__license__
+__author__ = "Kazuyuki OHMI"
+__version__ = "1.0.7"
+__date__    = "2016/12/12"
+__license__ = 'MIT'

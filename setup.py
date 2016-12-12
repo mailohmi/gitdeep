@@ -15,9 +15,5 @@ setup(
         keywords         = 'git',
         packages         = find_packages(),
         install_requires = ['six'],
-        entry_points={
-            'console_scripts': [
-                'gitdeep = gitdeep.gitdeep:main'
-            ]
-        }
+        scripts=['gitdeep/__main__.py'],
     )
