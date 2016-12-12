@@ -27,7 +27,7 @@ else:
 
 # Global variable
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.5"
+__version__ = "1.0.7"
 __date__    = "2016/12/12"
 __license__ = 'MIT'
 

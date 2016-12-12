@@ -25,7 +25,11 @@ gitdeep
   (2) ソースコードを取得する場合
     以下のコマンドより取得します。
     Github
-    $ git clone https://github.com/mailohmi/gitdeep.git
+      $ git clone https://github.com/mailohmi/gitdeep.git
+    
+    インストールします。
+      $ cd gitdeep
+      $ python -m pip install --upgrade .
 
   (3) PATHの設定
     インストール後に、環境変数のPATHを設定します。
