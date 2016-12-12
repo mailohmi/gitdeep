@@ -18,13 +18,17 @@ import sys
 import subprocess
 
 # Local module
-sys.path.append(os.path.join(os.path.dirname(__file__)))
-import logwriter
+if "." in __name__:
+    from . import logwriter
+    from . import cmdparser
+else:
+    import logwriter
+    import cmdparser
 
 # Global variable
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.4"
-__date__    = "2016/05/25"
+__version__ = "1.0.5"
+__date__    = "2016/12/12"
 __license__ = 'MIT'
 
 def call(cmd, args, **kwargs):
@@ -71,7 +75,7 @@ def get_dirs(path_search="", dir_match=".*"):
     パス以下のファイルを取得する。
         名前順にソートする。
     :param str path_search: パス名
-    :param str dir_match:   マッチング正規化表現式(ディレクトリ名に対して行う)
+    :param str dir_match:   マッチング正規化表現式(ディレクトリ名に対して行います)
     :rtype:                 list
     :return:                ファイルのリスト
     """
@@ -83,7 +87,7 @@ def get_dirs(path_search="", dir_match=".*"):
 
     for root, dirs, _files in os.walk(path_search):
 
-        # ディレクトリ毎の処理を行う。
+        # ディレクトリ毎の処理を行います。
         for dname in dirs:
             match = re.search(dir_match, dname)
             if match != None:
@@ -243,8 +247,9 @@ def main():
 
     # 変数を初期化します。
     result = 0
+    logger = logwriter.LogWriter("gitdeep")
 
-    # 引数の処理を行う。
+    # 引数の処理を行います。
     parser = argparse.ArgumentParser(
                      description=__doc__.strip(os.linesep))
     values = parse_docstring(call)

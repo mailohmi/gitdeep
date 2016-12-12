@@ -4,11 +4,11 @@
 コマンド引数の処理を行います。
 """
 
-# 互換モジュール
+# Compatible module
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-# システムモジュール
+# Buitin module
 import argparse
 import inspect
 import pprint
@@ -17,39 +17,47 @@ import sys
 import unittest
 import collections
 
-# グローバル変数
+# Global variable
 __author__ = "Kazuyuki OHMI"
-__version__ = "2.0.2"
-__date__ = "2016/05/23"
+__version__ = "2.2.0"
+__date__ = "2016/11/26"
 __license__ = "MIT"
 
 class CmdParser(argparse.ArgumentParser):
     """
     引数の処理を行います。
     docstringはspinx形式を使用します。
+    関数名をコマンドにしない場合には、argparseを使用します。
     """
 
-    def __init__(self, mod=None, functions=[], *args, **kwargs):
+    def __init__(self, functions=[], *args, **kwargs):
         """
         初期処理を行います。
             デバッグオプションを有効にするには、debug=Falseを設定します。
-        :param str mod:         モジュール ex.) sys.modules[__name__]
+
         :param list functions:  パーサーに設定する関数
         """
 
-        # 変数を初期化します。
-        description = ""
+        if not isinstance(functions, list):
+            raise TypeError("functions use list.")
+
+        # フレームを取得します。
+        stacks = inspect.stack()
+        caller_frame = stacks[1]
+        framerecord = caller_frame[0]
+        #pprint.pprint(repr(framerecord.f_globals))
 
         # docstringを設定します。
-        if mod is not None and getattr(mod, "__doc__"):
-            description = mod.__doc__.strip()
+        description = framerecord.f_globals.get("__doc__", "")
+        if description is not None:
+            description = description.strip()
 
         # ベースクラスの初期化を行います。
         argparse.ArgumentParser.__init__(self, description=description)
 
         # バージョンオプションを設定します。
-        if mod is not None and getattr(mod, "__version__"):
-            version = mod.__version__
+        if "__version__" in framerecord.f_globals:
+            version = framerecord.f_globals.get("__version__", "")
             self.add_argument('--version', action='version', version=version)
 
         # デバッグオプションを設定します。
@@ -64,12 +72,9 @@ class CmdParser(argparse.ArgumentParser):
 
                 # Sphinx スタイルの docstrings をパースします。
                 values = parse_sphinx(func)
-                help = values.get("description")
 
                 # コマンドを設定します。
-                action = subparsers.add_parser(func.__name__,
-                    help=values.get("description"),
-                    description=values.get("description"))
+                action = subparsers.add_parser(func.__name__, help=values.get("description"))
 
                 action.set_defaults(func=func)
 
@@ -82,13 +87,13 @@ class CmdParser(argparse.ArgumentParser):
                     if values.get(name).get("default") is None:
                         action.add_argument(name,
                             type=values.get(name).get("type"),
-                            help=values.get(name).get("help"))
+                            help=values.get(name).get("usage"))
                     else:
                         # デフォルト値があれば、任意引数にする。
                         action.add_argument("--" + name,
                             type=values.get(name).get("type"),
                             default=values.get(name).get("default"),
-                            help=values.get(name).get("help"))
+                            help=values.get(name).get("usage"))
 
     def parse_args(self, *args, **kwargs):
         """
@@ -227,69 +232,6 @@ def get_functions(mod):
 
     return functions
 
-def create_argparse(functions=[], *args, **kwargs):
-    """
-    ArgumentParserを生成します。
-    関数はサブパーサにします。
-
-    :param list functions:  パーサーに設定する関数
-    :rtype:                 ArgumentParser
-    :return:                生成したパーサー
-    """
-
-    # 変数を初期化します。
-    description = u""
-
-    # フレームを取得します。
-    stacks = inspect.stack()
-    stack = stacks[1]
-    frame = stack[0]
-    filename = stack[1]
-    if "__doc__" in frame.f_globals:
-        description = frame.f_globals.get("__doc__").strip()
-
-    parser = argparse.ArgumentParser(description=description)
-
-    if "__version__" in frame.f_globals:
-        version = frame.f_globals.get("__version__").strip()
-        parser.add_argument('--version', action='version', version=version)
-
-    if kwargs.get("debug") is not None:
-        parser.add_argument('--debug', action='store_true', default=kwargs.get("debug"), help='debug')
-
-    if functions:
-        subparsers = parser.add_subparsers()
-
-        for func in functions:
-
-            # action
-            values = parse_sphinx(func)
-
-            action = subparsers.add_parser(func.__name__, 
-                help=values.get("description"),
-                description=values.get("description"))
-
-            action.set_defaults(func=func)
-
-            for name in values:
-                if name == "name":
-                    continue
-                if name == "description":
-                    continue
-
-                if values.get(name).get("default") is None:
-                    action.add_argument(name,
-                        type=values.get(name).get("type"),
-                        help=values.get(name).get("help"))
-                else:
-                    # デフォルト値があれば、任意引数にする。
-                    action.add_argument("--" + name,
-                        type=values.get(name).get("type"),
-                        default=values.get(name).get("default"),
-                        help=values.get(name).get("help"))
-
-        return parser
-
 def dummy(text1, text2="abc", *args, **kwargs):
     """
     テスト関数
@@ -311,6 +253,8 @@ class TestCmdParser(unittest.TestCase):
     parser = None
 
     def setUp(self):
+        sys.stdout.write(os.linesep)
+
         self.parser = CmdParser(sys.modules[__name__], [dummy])
 
     def tearDown(self):
@@ -328,16 +272,16 @@ class Test(unittest.TestCase):
         pass
 
     def test_parse_sphinx(self):
+        sys.stdout.write(os.linesep)
+
         pprint.pprint(parse_sphinx(dummy))
         self.assertTrue(isinstance(parse_sphinx(dummy), dict))
 
     def test_get_functions(self):
+        sys.stdout.write(os.linesep)
+
         funcs = get_functions(sys.modules[__name__])
         self.assertTrue(get_functions in funcs)
-
-    def test_create_argparse(self):
-        parser = create_argparse([dummy], debug=False)
-        self.assertTrue(isinstance(parser, argparse.ArgumentParser))
 
 def main():
     """

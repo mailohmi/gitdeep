@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-パッケージエントリ
+コマンド引数の処理を行います。
 """
 
 # Compatible module
@@ -14,16 +14,11 @@ import os
 import sys
 
 # Local module
-import gitdeep
+from .cmdparser import *
 
 # Global variable
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.4"
-__date__    = "2016/05/16"
-__license__ = 'MIT'
+__version__ = "2.2.0"
+__date__ = "2016/11/26"
+__license__ = "MIT"
 
-if __name__ == "__main__":
-    """
-    self entry point
-    """
-    sys.exit(gitdeep.main())
