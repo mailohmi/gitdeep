@@ -60,9 +60,12 @@ gitdeep
     > python -m zipapp gitdeep --python python
 
 4. 使用方法
-  * コマンドから実行する(gitdeep)。
+  * コマンドから実行する場合
     下位ディレクトリを含めて、"git status" を実行します。
     $ gitdeep status
+
+  * アーカイブから実行する場合
+    $ gitdeep.pyz status
 
 5. 履歴
   1.0 git_subdirより移行しました。
