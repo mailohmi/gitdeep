@@ -13,7 +13,7 @@ from __future__ import unicode_literals
 from .logwriter import *
 
 # Global variable
-__author__ = logwriter.__author__
+__author__ = "Kazuyuki OHMI"
 __version__ = logwriter.__version__
-__date__    = logwriter.__date__
-__license__ = logwriter.__license__
+__date__    = "2016/05/10"
+__license__ = "MIT"

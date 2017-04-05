@@ -10,7 +10,6 @@ from __future__ import unicode_literals
 import six
 
 # Buitin module
-import codecs
 import collections
 import datetime
 import functools
@@ -19,7 +18,6 @@ import logging.handlers
 import os
 import stat
 import sys
-import textwrap
 import unittest
 import cProfile
 import pstats
@@ -27,11 +25,10 @@ import io
 
 # Global variable
 __author__ = "Kazuyuki OHMI"
-__version__ = "3.9.1"
-__date__    = "2016/12/06"
+__version__ = "4.0.0"
+__date__ = "2017/03/27"
 __license__ = "MIT"
 
-_LOGGERS = []               # ロガーオブジェクト配列
 CRITICAL = logging.CRITICAL
 ERROR = logging.ERROR
 WARNING = logging.WARNING
@@ -42,21 +39,21 @@ NOTSET = logging.NOTSET
 class LogWriter(logging.Logger):
     """
     ロガー
-    * confファイルから読み込んだ型を修正します。
-    * debug()関数に行番号を追加します。
-    * levelでは以下の値を使用します。
-        CRITICAL    50
-        ERROR       40
-        WARNING     30
-        INFO        20
-        DEBUG       10
-        NOTSET      0
-    * ディレクトリセパレータを変換します。
+        * confファイルから読み込んだ型を修正します。
+        * debug()関数に行番号を追加します。
+        * levelでは以下の値を使用します。
+            CRITICAL    50
+            ERROR       40
+            WARNING     30
+            INFO        20
+            DEBUG       10
+            NOTSET      0
+        * ディレクトリセパレータを変換します。
     """
 
     formats = ["%(asctime)s\t%(name)s\t%(levelname)s\t%(message)s",
         "%(asctime)s %(name)s %(levelname)s %(message)s",
-        "%(asctime)s %(message)s",                               
+        "%(asctime)s %(message)s",
         "%(message)s",]
 
     conf = {
@@ -68,6 +65,8 @@ class LogWriter(logging.Logger):
         "maxBytes": 1024 * 1024,    # max bytes of log file.
         "backupCount": 2,           # backup count of log file.
         }
+
+    path_main = ""                  # main mulude path
 
     @property
     def version(self):
@@ -88,7 +87,8 @@ class LogWriter(logging.Logger):
 
     def __init__(self, name="root", level=logging.INFO, **kwargs):
         """
-        コンストラクタ
+        Constructor
+        Adding object to LOGWRITERS list.
 
         :param str name:        ログ名称
         :param int level:       ログレベル
@@ -140,8 +140,12 @@ class LogWriter(logging.Logger):
 
             self.addRotateFileHandler(filename,maxBytes,backupCount)
 
-        # ロガーオブジェクト配列に登録します。
-        appendLogger(self)
+        # ロガー配列に登録します。
+        import __main__
+        self.path_main = __main__.__file__
+        if not hasattr(__main__, 'LOGWRITERS'):
+            __main__.LOGWRITERS = []
+        __main__.LOGWRITERS.append(self)
 
     def __str__(self):
         return str(__dict__)
@@ -358,24 +362,9 @@ class LogWriter(logging.Logger):
 
         return args_txt
 
-def appendLogger(logger, *args, **kwargs):
-    """
-    ロガーオブジェクト配列に登録します。
-
-    :param u logger:    ロガー
-    :rtype:             None
-    """
-    # 変数を初期化します。
-    global _LOGGERS
-
-    _LOGGERS.append(logger)
-
-    return
-
 def getLogger(name=None, *args, **kwargs):
     """
     LogWriter を取得します。
-    名前を指定しない場合、name=Noneを設定します。
 
     :param u name:      ロガーの名前
     :rtype:             LogWriter
@@ -386,7 +375,6 @@ def getLogger(name=None, *args, **kwargs):
 
     # 変数を初期化します。
     logger = None
-    histories = []
 
     while True:
         # args から Logger を取得します。
@@ -401,48 +389,25 @@ def getLogger(name=None, *args, **kwargs):
                 logger = value
                 return logger
 
-        # フレームを取得します。
-        stacks = inspect.stack()
-        for stackindex in range(len(stacks) - 1, -1, -1):
-            caller_frame = stacks[stackindex]
-            frame_package_module = caller_frame[0]
-            filename = frame_package_module.f_globals.get("__file__")
-            histories.append(filename) 
+        # find logwriter from main module
+        import __main__
+        if not hasattr(__main__, 'LOGWRITERS'):
+            break
+        logwriters = __main__.LOGWRITERS
+        if name is None:
+            logger = logwriters[-1]
+            break
 
-            # LogWriterオブジェクト配列を取得します。
-            package = frame_package_module.f_globals.get("logwriter")
-            if package is not None and hasattr(package, "logwriter"):
-                module = package.logwriter
-                loggers = module._LOGGERS
-            elif hasattr(frame_package_module.f_globals, "_LOGGERS"):
-                loggers = frame_package_module.f_globals._LOGGERS
-            else:
-                loggers = None
-
-            if loggers is None:
-                continue
-
-            if len(loggers) == 0:
-                continue
-
-            if name is None:
-
-                # LogWriterを取得します。
-                if len(loggers) > 0:
-                    logger = loggers[-1]
-                    break
-            else:
-                # nameが一致するLogWriterを取得します。
-                for logger in loggers:
-                    if logger.name == name:
-                        break
+        for logwriter in reversed(logwriters):
+            if logwriter.name == name:
+                logger = logwriter
+                break
 
         break
 
     if logger is None:
-        message = u"LogWriter was not found at following file." + os.linesep
-        message += repr(histories)
-        raise ValueError(message)
+        sys.stderr.write(u"LogWriter was not found at %s.\n" % __main__.__file__) 
+        logger = LogWriter()
 
     return logger
 
@@ -464,13 +429,10 @@ def stack_frame(context=2):
 
     return frameinfo
 
-"""
-function decorator
-"""
 def obsolete(fname):
     """
     廃止予定の警告を表示する。
-    表示する関数に関数デコレータ"@logwriter.obsolete"をつける。
+    表示する関数に関数デコレータ"@logwriter.obsolete"をつけます。
 
     :param function fname: 関数
     :rtype:                object
@@ -496,7 +458,6 @@ def print_profile(command, max_ratio=1.0, filter_text=None):
 
     :param u command:       実行するコマンド ex. test()
     :param float max_ratio: 表示する上限 < 1.0
-    :param u filter_text:   表示制限するテキスト
     :rtype:                 None
     """
 
@@ -508,9 +469,8 @@ def print_profile(command, max_ratio=1.0, filter_text=None):
     prof = prof.run(command)
 
     #stream = io.StringIO()
-    #stream = io.BytesIO()
-    #stats = pstats.Stats(prof, stream=stream)
-    stats = pstats.Stats(prof)
+    stream = io.BytesIO()
+    stats = pstats.Stats(prof, stream=stream)
 
     # time で sort します
     stats.sort_stats(u"time")
@@ -518,11 +478,12 @@ def print_profile(command, max_ratio=1.0, filter_text=None):
     # 表示する上限まで出力します
     if filter_text is None:
         stats.print_stats(max_ratio)
+
     else:
         stats.print_stats(filter_text, max_ratio)
 
-    ## 結果を出力します。
-    #logger.info("Profile Result:\n%s", stream.getvalue())
+    # 結果を出力します。
+    logger.info("Profile Result:\n%s", stream.getvalue())
 
     return
 
@@ -578,56 +539,44 @@ def decode(raw):
 
     return result
 
-def get_encoding(raw):
+def basename(path):
     """
-    文字のエンコーディングを取得します。
+    path の末尾のファイル名部分を返します。
 
-    :param b raw:           Data
-    :rtype:                 str
-    :return:                encoding
-    """
-
-    if six.PY2:
-        pass
-    else:
-        if isinstance(raw, str):
-            raw = raw.encode("cp437")
-
-    encoding = decode(raw).encoding
-
-    return encoding
-
-def ascii_repr(txt):
-    """
-    アスキー変換を行います。
-
-    :param u txt:   テキスト
-    :rtype:         str
-    :return:        変換したテキスト
+    :param u path:          パス
+    :rtype:                 named tuple
+    :return:                (text, encoding)
     """
 
     # 変数を初期化します。
-    raw = b""
+    File = collections.namedtuple("File", "dir filename basename extension")
 
-    while True:
-        if isinstance(txt, int):
-            raw = str(txt)
-            break
+    dirname = os.path.dirname(path)
+    filename = os.path.basename(path)
+    fileitem = os.path.splitext(filename)
 
-        # リテラル形式に変換する。
-        raw = repr(txt)
+    result = File(dirname, filename, fileitem[0], fileitem[1])
 
-        # unicode表記を除外する。
-        if raw.startswith(u"u'") and raw.endswith(u"'"):
-            raw = raw[2:-1]
+    return result
 
-        # シングルクオートを除外する。
-        if raw.startswith(u"'") and raw.endswith(u"'"):
-            raw = raw.strip(u"'")
+def parse_second(second, *args, **kwargs):
+    """
+    秒を時分秒に変換します。
 
-        break
+    :rtype:             bool
+    """
 
-    return raw
+    # 変数を初期化します。
+    result = {}
+    time_days, time_rest = divmod(second, 86400)
+    result["days"] = int(time_days)
+    time_hour, time_rest = divmod(time_rest, 3600)
+    result["hours"] = int(time_hour)
+    time_min, time_sec = divmod(time_rest, 60)
+    result["minutes"] = int(time_min)
+    result["seconds"] = time_sec
+ 
+    return result
 
 class TestLogWriter(unittest.TestCase):
     """
@@ -671,7 +620,7 @@ class TestLogWriter(unittest.TestCase):
         self.assertEqual(result, None)
 
 @obsolete
-def test_dummy3(*args, **kwargs):
+def test_dummy(*args, **kwargs):
     return 0
 
 class Test(unittest.TestCase):
@@ -693,42 +642,21 @@ class Test(unittest.TestCase):
     def tearDown(self):
         self.logger = None
 
-    #def test_get_args_txt(self):
-    #    sys.stdout.write(os.linesep)
-
-    #    result = get_argtext(1, 2, test=u"abc")
-    #    self.assertTrue(len(result) > 0)
-
     def test_getLogger(self):
         sys.stdout.write(os.linesep)
+        logger = LogWriter(__file__)
 
         result = getLogger()
         self.assertTrue(isinstance(result, LogWriter))
 
-        result = getLogger(os.path.splitext(os.path.basename(__file__))[0])
-        self.assertEqual(result.name, os.path.splitext(os.path.basename(__file__))[0])
+        result = getLogger(__file__)
+        self.assertEqual(result.name, __file__)
 
     def test_obsolete(self):
         sys.stdout.write(os.linesep)
 
-        result = test_dummy3()
+        result = test_dummy()
         self.assertEqual(result, 0)
-
-    def test_get_encoding():
-        sys.stdout.write(os.linesep)
-
-        result = get_yyyymmdd_hhmmss_utc()
-        self.logger.info(result)
-        self.assertTrue(result != "")
-
-    def test_get_encoding(self):
-        sys.stdout.write(os.linesep)
-
-        result = get_encoding(u"①".encode("utf_8")) # 0xE291A0
-        self.assertEqual(result, u"utf_8")
-
-        result = get_encoding(codecs.encode(u"あ", "euc_jp")) # 0xA4A2
-        self.assertEqual(result, u"euc_jp")
 
     def test_decode(self):
         sys.stdout.write(os.linesep)
@@ -754,7 +682,7 @@ if __name__ == "__main__":
     self entry point
     """
 
-    # simple logger
+    # logger for test
     _logger = logging.getLogger(__name__)
     handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
