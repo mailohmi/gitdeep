@@ -66,6 +66,3 @@ gitdeep
 
   * アーカイブから実行する場合
     $ gitdeep.pyz status
-
-5. 履歴
-  1.0 git_subdirより移行しました。
