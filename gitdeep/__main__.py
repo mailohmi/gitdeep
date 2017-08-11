@@ -18,8 +18,8 @@ import gitdeep
 
 # Global variable
 __author__ = "Kazuyuki OHMI"
-__version__ = "1.0.4"
-__date__    = "2016/05/16"
+__version__ = "1.1.0"
+__date__    = "2017/04/05"
 __license__ = 'MIT'
 
 if __name__ == "__main__":

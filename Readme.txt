@@ -57,10 +57,14 @@ gitdeep
     * 以下のコマンドを実行します。
       $ python -m pip uninstall gitdeep
 
+  (6) zip アーカイブ
+    以下のコマンドより実行アーカイブにします (> python3.5)。
+    > python -m zipapp gitdeep --python python
+
 4. 使用方法
-  * コマンドから実行する(gitdeep)。
+  * コマンドから実行する場合
     下位ディレクトリを含めて、"git status" を実行します。
     $ gitdeep status
 
-5. 履歴
-  1.0 git_subdirより移行しました。
+  * アーカイブから実行する場合
+    $ gitdeep.pyz status
